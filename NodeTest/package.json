@@ -1,0 +1,27 @@
+{
+  "name": "my_test_project",
+  "version": "1.0.0",
+  "description": "A simple chat service",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": "",
+  "author": "",
+  "license": "ISC",
+  "private": true,
+  "dependencies": {
+    "array-list": "^1.0.7",
+    "bluebird": "^3.7.2",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "line-reader": "^0.4.0",
+    "log": "1.4.0",
+    "mongo": "^0.1.0",
+    "mongoose": "^5.9.5",
+    "read-last-lines": "^1.7.2",
+    "readline-specific": "^1.0.4",
+    "socket.io": "^2.3.0"
+  }
+}

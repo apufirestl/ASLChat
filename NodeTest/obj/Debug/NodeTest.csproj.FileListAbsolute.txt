@@ -1,0 +1,71 @@
+C:\Users\Gazi Monir-Uz-Zaman\source\repos\NodeTest\NodeTest\bin\NodeTest.dll.config
+C:\Users\Gazi Monir-Uz-Zaman\source\repos\NodeTest\NodeTest\bin\NodeTest.dll
+C:\Users\Gazi Monir-Uz-Zaman\source\repos\NodeTest\NodeTest\bin\NodeTest.pdb
+C:\Users\Gazi Monir-Uz-Zaman\source\repos\NodeTest\NodeTest\bin\roslyn\csc.exe
+C:\Users\Gazi Monir-Uz-Zaman\source\repos\NodeTest\NodeTest\bin\roslyn\csc.exe.config
+C:\Users\Gazi Monir-Uz-Zaman\source\repos\NodeTest\NodeTest\bin\roslyn\csc.rsp
+C:\Users\Gazi Monir-Uz-Zaman\source\repos\NodeTest\NodeTest\bin\roslyn\csi.exe
+C:\Users\Gazi Monir-Uz-Zaman\source\repos\NodeTest\NodeTest\bin\roslyn\csi.rsp
+C:\Users\Gazi Monir-Uz-Zaman\source\repos\NodeTest\NodeTest\bin\roslyn\Microsoft.Build.Tasks.CodeAnalysis.dll
+C:\Users\Gazi Monir-Uz-Zaman\source\repos\NodeTest\NodeTest\bin\roslyn\Microsoft.CodeAnalysis.CSharp.dll
+C:\Users\Gazi Monir-Uz-Zaman\source\repos\NodeTest\NodeTest\bin\roslyn\Microsoft.CodeAnalysis.CSharp.Scripting.dll
+C:\Users\Gazi Monir-Uz-Zaman\source\repos\NodeTest\NodeTest\bin\roslyn\Microsoft.CodeAnalysis.dll
+C:\Users\Gazi Monir-Uz-Zaman\source\repos\NodeTest\NodeTest\bin\roslyn\Microsoft.CodeAnalysis.Scripting.dll
+C:\Users\Gazi Monir-Uz-Zaman\source\repos\NodeTest\NodeTest\bin\roslyn\Microsoft.CodeAnalysis.VisualBasic.dll
+C:\Users\Gazi Monir-Uz-Zaman\source\repos\NodeTest\NodeTest\bin\roslyn\Microsoft.CSharp.Core.targets
+C:\Users\Gazi Monir-Uz-Zaman\source\repos\NodeTest\NodeTest\bin\roslyn\Microsoft.DiaSymReader.Native.amd64.dll
+C:\Users\Gazi Monir-Uz-Zaman\source\repos\NodeTest\NodeTest\bin\roslyn\Microsoft.DiaSymReader.Native.x86.dll
+C:\Users\Gazi Monir-Uz-Zaman\source\repos\NodeTest\NodeTest\bin\roslyn\Microsoft.VisualBasic.Core.targets
+C:\Users\Gazi Monir-Uz-Zaman\source\repos\NodeTest\NodeTest\bin\roslyn\System.AppContext.dll
+C:\Users\Gazi Monir-Uz-Zaman\source\repos\NodeTest\NodeTest\bin\roslyn\System.Collections.Immutable.dll
+C:\Users\Gazi Monir-Uz-Zaman\source\repos\NodeTest\NodeTest\bin\roslyn\System.Diagnostics.StackTrace.dll
+C:\Users\Gazi Monir-Uz-Zaman\source\repos\NodeTest\NodeTest\bin\roslyn\System.IO.FileSystem.dll
+C:\Users\Gazi Monir-Uz-Zaman\source\repos\NodeTest\NodeTest\bin\roslyn\System.IO.FileSystem.Primitives.dll
+C:\Users\Gazi Monir-Uz-Zaman\source\repos\NodeTest\NodeTest\bin\roslyn\System.Reflection.Metadata.dll
+C:\Users\Gazi Monir-Uz-Zaman\source\repos\NodeTest\NodeTest\bin\roslyn\vbc.exe
+C:\Users\Gazi Monir-Uz-Zaman\source\repos\NodeTest\NodeTest\bin\roslyn\vbc.exe.config
+C:\Users\Gazi Monir-Uz-Zaman\source\repos\NodeTest\NodeTest\bin\roslyn\vbc.rsp
+C:\Users\Gazi Monir-Uz-Zaman\source\repos\NodeTest\NodeTest\bin\roslyn\VBCSCompiler.exe
+C:\Users\Gazi Monir-Uz-Zaman\source\repos\NodeTest\NodeTest\bin\roslyn\VBCSCompiler.exe.config
+C:\Users\Gazi Monir-Uz-Zaman\source\repos\NodeTest\NodeTest\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll
+C:\Users\Gazi Monir-Uz-Zaman\source\repos\NodeTest\NodeTest\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
+C:\Users\Gazi Monir-Uz-Zaman\source\repos\NodeTest\NodeTest\obj\Debug\NodeTest.csprojAssemblyReference.cache
+C:\Users\Gazi Monir-Uz-Zaman\source\repos\NodeTest\NodeTest\obj\Debug\NodeTest.csproj.CoreCompileInputs.cache
+C:\Users\Gazi Monir-Uz-Zaman\source\repos\NodeTest\NodeTest\obj\Debug\NodeTest.csproj.CopyComplete
+C:\Users\Gazi Monir-Uz-Zaman\source\repos\NodeTest\NodeTest\obj\Debug\NodeTest.dll
+C:\Users\Gazi Monir-Uz-Zaman\source\repos\NodeTest\NodeTest\obj\Debug\NodeTest.pdb
+E:\Work\ASL_Chat-master\NodeTest\bin\NodeTest.dll.config
+E:\Work\ASL_Chat-master\NodeTest\bin\NodeTest.dll
+E:\Work\ASL_Chat-master\NodeTest\bin\NodeTest.pdb
+E:\Work\ASL_Chat-master\NodeTest\bin\roslyn\csc.exe
+E:\Work\ASL_Chat-master\NodeTest\bin\roslyn\csc.exe.config
+E:\Work\ASL_Chat-master\NodeTest\bin\roslyn\csc.rsp
+E:\Work\ASL_Chat-master\NodeTest\bin\roslyn\csi.exe
+E:\Work\ASL_Chat-master\NodeTest\bin\roslyn\csi.rsp
+E:\Work\ASL_Chat-master\NodeTest\bin\roslyn\Microsoft.Build.Tasks.CodeAnalysis.dll
+E:\Work\ASL_Chat-master\NodeTest\bin\roslyn\Microsoft.CodeAnalysis.CSharp.dll
+E:\Work\ASL_Chat-master\NodeTest\bin\roslyn\Microsoft.CodeAnalysis.CSharp.Scripting.dll
+E:\Work\ASL_Chat-master\NodeTest\bin\roslyn\Microsoft.CodeAnalysis.dll
+E:\Work\ASL_Chat-master\NodeTest\bin\roslyn\Microsoft.CodeAnalysis.Scripting.dll
+E:\Work\ASL_Chat-master\NodeTest\bin\roslyn\Microsoft.CodeAnalysis.VisualBasic.dll
+E:\Work\ASL_Chat-master\NodeTest\bin\roslyn\Microsoft.CSharp.Core.targets
+E:\Work\ASL_Chat-master\NodeTest\bin\roslyn\Microsoft.DiaSymReader.Native.amd64.dll
+E:\Work\ASL_Chat-master\NodeTest\bin\roslyn\Microsoft.DiaSymReader.Native.x86.dll
+E:\Work\ASL_Chat-master\NodeTest\bin\roslyn\Microsoft.VisualBasic.Core.targets
+E:\Work\ASL_Chat-master\NodeTest\bin\roslyn\System.AppContext.dll
+E:\Work\ASL_Chat-master\NodeTest\bin\roslyn\System.Collections.Immutable.dll
+E:\Work\ASL_Chat-master\NodeTest\bin\roslyn\System.Diagnostics.StackTrace.dll
+E:\Work\ASL_Chat-master\NodeTest\bin\roslyn\System.IO.FileSystem.dll
+E:\Work\ASL_Chat-master\NodeTest\bin\roslyn\System.IO.FileSystem.Primitives.dll
+E:\Work\ASL_Chat-master\NodeTest\bin\roslyn\System.Reflection.Metadata.dll
+E:\Work\ASL_Chat-master\NodeTest\bin\roslyn\vbc.exe
+E:\Work\ASL_Chat-master\NodeTest\bin\roslyn\vbc.exe.config
+E:\Work\ASL_Chat-master\NodeTest\bin\roslyn\vbc.rsp
+E:\Work\ASL_Chat-master\NodeTest\bin\roslyn\VBCSCompiler.exe
+E:\Work\ASL_Chat-master\NodeTest\bin\roslyn\VBCSCompiler.exe.config
+E:\Work\ASL_Chat-master\NodeTest\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll
+E:\Work\ASL_Chat-master\NodeTest\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
+E:\Work\ASL_Chat-master\NodeTest\obj\Debug\NodeTest.csprojAssemblyReference.cache
+E:\Work\ASL_Chat-master\NodeTest\obj\Debug\NodeTest.csproj.CopyComplete
+E:\Work\ASL_Chat-master\NodeTest\obj\Debug\NodeTest.dll
+E:\Work\ASL_Chat-master\NodeTest\obj\Debug\NodeTest.pdb

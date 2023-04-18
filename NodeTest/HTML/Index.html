@@ -1,0 +1,242 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>ASL Chat</title>
+    <link rel="icon" type="image/png" href="/Images/ASLIco.ico">
+    <link href="../CSS/LightBeam.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Akronim|Ewert|Fredericka+the+Great|Kaushan+Script|Merienda+One|Permanent+Marker&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" type="text/css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" />
+    <!--<script src="../JS test token/TestToken.js"></script>-->
+    <!--<script src="../Server/app.js"></script>-->
+    <!--test me-->
+    <script>
+       
+        //$(function () {
+        //global variable to save user name
+        var nameCheck;
+        //global variable to save user name
+        //$("#email").keyup(function (event) {
+        //        if (event.keyCode === 13) {
+        //            $("#loginbtn").click();
+        //        }
+        //});
+
+        //$("#password").keyup(function (event) {
+        //        if (event.keyCode === 13) {
+        //            $("#loginbtn").click();
+        //        }
+        //    });
+        function tokenIns() {
+            var xhttp2 = new XMLHttpRequest();
+            //token generate
+
+            function guid() {
+
+                //adding date and time to the GUID
+                var dateTime = new Date();
+                var dt = dateTime.getDate().toString();
+                var hr = dateTime.getHours().toString();
+                var min = dateTime.getMinutes().toString();
+
+                var timeStamp = (dt + hr + min);
+                //adding date and time to the GUID
+
+
+
+                function s4() {
+                    return Math.floor((1 + Math.random()) * 0x10000)
+                        .toString(16)
+                        .substring(1);
+                }
+                return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+                    s4() + '-' + s4() + s4() + s4() + '-' + timeStamp;
+            }
+
+
+            var token = guid();
+            //token generation finished
+            localStorage.setItem('UserToken', token);
+
+            // setting status
+            var status = "true";
+            // setting status
+
+
+            xhttp2.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+
+                    //saving user name to show in the chat
+
+                    localStorage.setItem('UserName', nameCheck);
+
+                    //saving user name to show in the chat
+
+
+
+                    //alert("token has been created!!!");
+
+                }
+            }
+            xhttp2.open("POST", "http://163.53.150.54:1234/u=" + document.getElementById("email").value + ",t=" + token + ",s=" + status, true);
+            xhttp2.send();
+
+        }
+
+
+        function loadDoc() {
+
+
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    var json = JSON.parse(this.responseText);
+
+                    var passCheck, emailCheck, passInput;
+
+
+                    if (json == "") {
+                        alert("User does not exist!");
+                    } else {
+                        nameCheck = json[0].name;
+                        passCheck = json[0].password;
+                        emailCheck = json[0].email;
+                        passInput = document.getElementById("password").value;
+
+                        //alert(emailCheck + " " + passCheck);
+                        if (passCheck === passInput) {
+                            //alert("Thank you sir, " + "please hold on while we generate your login token!");
+
+                            //Token POST API call
+
+                            tokenIns();
+
+
+                            //Token POST API call
+
+                            //logged in users Name transfer
+                            localStorage.setItem("nameCheck", nameCheck);
+                            //logged in users Name transfer
+
+
+                            setTimeout(function () {
+                                //location.replace("file:///C:/Users/Gazi%20Monir-Uz-Zaman/Desktop/ChatProjectSocket/ChatProjectSocket/HTML/Index.html");
+                                location.replace("../HTML/chat.html");
+                            }, 1000);
+
+
+                        } else {
+                            alert("Password is not right :( ");
+                        }
+
+                    }
+
+                }
+            };
+            xhttp.open("GET", "http://163.53.150.54:1234/user=" + document.getElementById("email").value, true);
+            xhttp.send();
+        }
+             
+        //});
+    </script>
+</head>
+<body class="loginPage">
+    <!--navbar-->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="row">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">
+                    <img src="../Images/Logo.png" style="height: 50px; width: auto;" />
+                    <a class="text-center" style="font-family: Kaushan Script; background: -webkit-linear-gradient(left, #7de09b, #1aaee4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 2rem; margin-bottom: 0;">Alchemy Chat</a>
+                </a>
+            </div>
+        </div>
+
+        <!--<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Link</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Dropdown
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="#">Action</a>
+                        <a class="dropdown-item" href="#">Another action</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#">Something else here</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link disabled" href="#">Disabled</a>
+                </li>
+            </ul>
+            <form class="form-inline my-2 my-lg-0">
+                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            </form>
+        </div>-->
+    </nav>
+
+
+    <div class="container" style="margin-top: 3%;justify-content:center; align-items:center;text-align:center; border: none; border-radius: 17px; background-color: transparent;">
+        <div class="row">
+            <div class="col-md-12">
+                <p class="text-center" style="font-family: Kaushan Script; background: -webkit-linear-gradient(left, #7de09b, #1aaee4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 6rem;">Login</p>
+            </div>
+        </div>
+
+        <div class="row" style="justify-content:center;">
+            <div class="col-md-12" style="">
+                <p>Login to your account to start the service</p>
+            </div>
+            <div class="col-12" style="justify-content:center">
+                <div class="input-group mb-3 ml-3" style="justify-content:center">
+                    <input class="loginInput" type="text" id="email" placeholder="EMAIL" style="text-indent: 12%;" />
+                    <div class="input-group-append" style="position: relative; right: 40px;">
+                        <span class="input-group-text" style="border: none; background: transparent;"><i class="fas fa-user"></i></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12" style="justify-content:center">
+                <div class="input-group mb-3 ml-3" style="justify-content:center">
+                    <input class="loginInput" type="password" id="password" placeholder="PASSWORD" style="text-indent: 12%;" />
+                    <div class="input-group-append" style="position: relative; right: 40px;">
+                        <span class="input-group-text" style="border: none; background: transparent;"><i class="fas fa-lock"></i></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="flex-md-row" style="">
+                    <input type="button" value="Submit" id="loginbtn" class="loginBtn" onclick="loadDoc()" />
+                </div>
+            </div>
+        </div>
+
+        <!--<footer class="text-right">
+            <p>A Product of Alchemy Software Limited</p>
+        </footer>-->
+    </div>
+
+    <div class="row" style="bottom:0;position:absolute; right: 15px; bottom: 10px;">
+
+        <div class="col-12" style="">
+            <footer class="text-right">
+                <p>A Product of Alchemy Software Limited</p>
+            </footer>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,40 @@
+{ 
+    "_id" : ObjectId("5e770605df43caf89973ad53"), 
+    "name" : "Jumon", 
+    "address" : "CTG", 
+    "mobileNo" : "01313406613", 
+    "DOB" : "undefine", 
+    "email" : "jumon@gmail.com"
+}
+{ 
+    "_id" : ObjectId("5e772785df43caf89973ad55"), 
+    "name" : "Sakib", 
+    "address" : "CTG", 
+    "mobileNo" : "01313406612", 
+    "DOB" : "03/09/1998", 
+    "email" : "sakib@gmail.com"
+}
+{ 
+    "_id" : ObjectId("5e772785df43caf89973ad56"), 
+    "name" : "Main", 
+    "address" : "Noakhali", 
+    "mobileNo" : "01313406614", 
+    "DOB" : "1988-12-23", 
+    "email" : "rajib@gmail.com"
+}
+{ 
+    "_id" : ObjectId("5e774279df43caf89973ad57"), 
+    "name" : "Sakib", 
+    "address" : "CTG", 
+    "mobileNo" : "01313406612", 
+    "DOB" : "03/09/1998", 
+    "email" : "sakib@gmail.com"
+}
+{ 
+    "_id" : ObjectId("5e774279df43caf89973ad58"), 
+    "name" : "Main", 
+    "address" : "Noakhali", 
+    "mobileNo" : "01313406614", 
+    "DOB" : "01/03/1988", 
+    "email" : "rajib@gmail.com"
+}

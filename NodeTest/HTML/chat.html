@@ -1,0 +1,1419 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>ASL Chat</title>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" type="text/css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Akronim|Ewert|Fredericka+the+Great|Kaushan+Script|Merienda+One|Permanent+Marker&display=swap" rel="stylesheet">
+    <link href="../CSS/LightBeam.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/js/bootstrap.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.slim.js"></script>
+
+    <script>
+        $(function () {
+
+            // global variable part----------------------------------------
+            //User's message
+            var message;
+            //User's message
+
+            //setting username
+            var user = localStorage.getItem("nameCheck");
+            //setting username
+
+
+            //user can not chat without being logged in
+            if (user == null) {
+                location.replace("../HTML/Index.html");
+            }
+            //user can not chat without being logged in
+
+
+            //storing user's socket ID
+            var usrSocket;
+            //storing user's socket ID
+
+            //setting clicked user name
+            var selectedUser;
+            //setting clicked user name
+
+            //users' Array list
+            var usrArray = [];
+            //users' Array list
+
+            //users' online list
+            var usrOnline = [];
+            //users' online list
+
+            //check if user selected
+            var usrclicked = false;
+            //check if user selected
+
+            //logged in user profile information
+            var addr;
+            var mob;
+            var dob;
+            var mail;
+            //logged in user profile information
+
+            //selected user profile information storage
+            var usrAddr;
+            var usrMob;
+            var usrDob;
+            var usrMail;
+            //selected user profile information storage
+
+            //checking if history is being loaded
+            var history;
+            //checking if history is being loaded
+
+            //load more
+            var loadMore = false;
+            //load more
+
+            //profile selector
+            var profileSelector;
+            //profile selector
+
+            // global variable part----------------------------------------
+
+            //this is the function for autoscrolling
+            function autoScroll() {
+                $('#msgList').scrollTop($('#msgList')[0].scrollHeight);
+            }
+            //this is the function for autoscrolling
+
+
+            //making ENTER button press to send msg
+            $("#textMessage").keyup(function (event) {
+                if (event.keyCode === 13) {
+                    $("#btnSend").click();
+                }
+            });
+            //making ENTER button press to send msg
+
+            //making ENTER button press to search contact
+            $("#contactSearch").keyup(function (event) {
+                //if (event.keyCode === 13) {
+                //    $("#contSrch").click();
+                //}
+                listUsers();
+                $("#contSrch").click();
+            });
+            //making ENTER button press to search contact
+
+            ////selected contact information/profile
+            //$("#selectedUsrProfile").on('click', function () {
+            //    alert("this is the profile of: " + selectedUser);
+            //});
+            ////selected contact information/profile
+
+            //contact search
+            $("#contSrch").on('click', function () {
+                var srchString = ($('#contactSearch').val()).toLowerCase();
+                usrArray.forEach(myCont);
+
+                function myCont(item, index) {
+                    var itmLow = item.toLowerCase();
+                    if (itmLow.indexOf(srchString) === -1) {
+                        if ( document.getElementById(item) !== null) {
+                            document.getElementById(item).remove();
+                        }
+                    }
+                }
+            });
+            //contact search
+
+            //selected user row update
+            function selectedUsrRowUpd() {
+
+                //selected user status icon
+                if (document.getElementById(selectedUser + 'sigDot') !== null) {
+                    document.getElementById("selectedUsrIco").style.backgroundColor =
+                        document.getElementById(selectedUser + 'sigDot').style.backgroundColor;
+                }
+                //selected user status icon
+
+                //selected user status
+                if (document.getElementById(selectedUser + 'sigDot') !== null) {
+                    if (document.getElementById(selectedUser + 'sigDot').style.backgroundColor === "red") {
+                        document.getElementById("selectedUsrSt").innerHTML = "offline";
+                    } else if (document.getElementById(selectedUser + 'sigDot').style.backgroundColor === "green") {
+                        document.getElementById("selectedUsrSt").innerHTML = "online";
+                    }
+                }
+                //selected user status
+
+            }
+
+            //load profile Picture 
+
+            function imagLoad() {
+                return "../Images/110845++-300x300.jpg";
+
+            }
+            //selected user row update
+
+            //updating user infos into the popup
+            $("#usrProfile").on('click', function () {
+                profileSelector = "usr";
+                rtvUserProf(user);
+            });
+            //updating user infos into the popup
+
+            //updating selected user infos into the popup
+            $("#selectedUsrProfile").on('click', function () {
+
+                //empty first----- I've put it here to solve one user's info loading into another's portion
+                document.getElementById("selectedUsrNm").innerHTML = "";
+                document.getElementById("usrAddr").innerHTML = "";
+                document.getElementById("usrMob").innerHTML = "";
+                document.getElementById("usrDob").innerHTML = "";
+                document.getElementById("usrMail").innerHTML = "";
+                //empty first
+
+                profileSelector = "slUsr";
+                rtvUserProf(selectedUser);
+            });
+            //updating selected user infos into the popup
+
+            //selected user profile information fetch
+            //retriving Users from database using API
+            function rtvUserProf(user) {
+
+
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function () {
+                    if (this.readyState == 4 && this.status == 200) {
+                        var json = JSON.parse(this.response);
+
+                        if (profileSelector === "slUsr") {
+                            usrAddr = json[0].address;
+                            usrMob = json[0].mobileNo;
+                            //usrDob = (json[0].DOB).slice(0, (json[0].DOB).indexOf("T"));
+                            usrDob = json[0].DOB;
+                            usrMail = json[0].email;
+                            //populating selected user data
+                            selectedUsrData();
+                            //populating selected user data
+                        } else if (profileSelector === "usr") {
+                            addr = json[0].address;
+                            mob = json[0].mobileNo;
+                            dob = json[0].DOB;
+                           // dob = (json[0].DOB).slice(0, (json[0].DOB).indexOf("T"));
+                            mail = json[0].email;
+                            //populating logged in user data
+                            lggdUsrData();
+                            //populating logged in user data
+                        }
+                    }
+                };
+                xhttp.open("GET", "http://163.53.150.54:1234/userName=" + user, true);  //---------temporary changed host and is subjected to be changed later back---------
+                xhttp.send();
+            }
+            //retriving Users from database using API
+
+            //updating Users into the database using API
+            function rtvUserProfPst() {
+
+                var addrPst = document.getElementById("addr").value;
+                var mobPst = document.getElementById("mob").value;
+                var dobPst = document.getElementById("datePicker").value;
+                var mailPst = document.getElementById("mail").value;
+                var usrPst = user;
+
+
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function () {
+                    if (this.readyState == 4 && this.status == 200) {
+                        //var json = JSON.parse(this.response);
+
+                        rtvUserProf(user);
+                    }
+                };
+                xhttp.open("POST", "http://163.53.150.54:1234/addr=" + addrPst + ",mob=" + mobPst + ",dob=" + dobPst + ",mail=" + mailPst + ",usr=" + usrPst, true);  //---------temporary changed host and is subjected to be changed later back---------
+                xhttp.send();
+            }
+            //updating Users into the database using API
+
+
+            //selected user profile information fetch
+
+            //setting logged in user data to the popup
+            function lggdUsrData() {
+
+                //empty first
+                document.getElementById("UsrNm").innerHTML = "";
+                document.getElementById("lggdusrAddr").innerHTML = "";
+                document.getElementById("lggdusrMob").innerHTML = "";
+                document.getElementById("lggdusrDob").innerHTML = "";
+                document.getElementById("lggdusrMail").innerHTML = "";
+                //empty first
+
+                //transferring these data to the popup
+                document.getElementById("UsrNm").innerHTML = user;
+                document.getElementById("lggdusrAddr").innerHTML = addr;
+                document.getElementById("lggdusrMob").innerHTML = mob;
+                document.getElementById("lggdusrDob").innerHTML = dob;
+                document.getElementById("lggdusrMail").innerHTML = mail;
+                //transferring these data to the popup
+
+            }
+            //setting logged in user data to the popup
+
+
+            //setting selected user data to the popup
+            function selectedUsrData() {
+                //empty first
+                document.getElementById("selectedUsrNm").innerHTML = "";
+                document.getElementById("usrAddr").innerHTML = "";
+                document.getElementById("usrMob").innerHTML = "";
+                document.getElementById("usrDob").innerHTML = "";
+                document.getElementById("usrMail").innerHTML = "";
+                //empty first
+
+                //transferring these data to the popup
+                document.getElementById("selectedUsrNm").innerHTML = selectedUser;
+                document.getElementById("usrAddr").innerHTML = usrAddr;
+                document.getElementById("usrMob").innerHTML = usrMob;
+                document.getElementById("usrDob").innerHTML = usrDob;
+                document.getElementById("usrMail").innerHTML = usrMail;
+                //transferring these data to the popup
+
+            }
+            //setting selected user data to the popup
+
+            //Jquery DatePicker
+            $("#datePicker").datepicker({
+                changeMonth: true,
+                changeYear: true
+            });
+            //Jquery DatePicker
+
+            //popup show and update
+            $("#edit").on('click', function () {
+                //hiding edit button
+                document.getElementById("edit").style.display = "none";
+                //hiding edit button
+
+                //hiding non-editable sectors
+                document.getElementById("lggdusrAddr").style.display = "none";
+                document.getElementById("lggdusrMob").style.display = "none";
+                document.getElementById("lggdusrDob").style.display = "none";
+                document.getElementById("lggdusrMail").style.display = "none";
+                //hiding non-editable sectors
+
+                //showing editable sectors
+                document.getElementById("lggdusrAddrEd").style.display = "block";
+                document.getElementById("addr").value = document.getElementById("lggdusrAddr").innerHTML;
+
+                document.getElementById("lggdusrMobEd").style.display = "block";
+                document.getElementById("mob").value = document.getElementById("lggdusrMob").innerHTML;
+
+                document.getElementById("lggdusrDobEd").style.display = "block";
+                document.getElementById("datePicker").value = document.getElementById("lggdusrDob").innerHTML;
+
+                document.getElementById("lggdusrMailEd").style.display = "block";
+                document.getElementById("mail").value = document.getElementById("lggdusrMail").innerHTML;
+                //showing editable sectors
+
+                //displaying ok button
+                document.getElementById("ok").style.display = "block";
+                //displaying ok button
+
+            });
+
+            $("#ok").on('click', function () {
+
+
+                rtvUserProfPst();
+
+                //showing edit button
+                document.getElementById("edit").style.display = "block";
+                //showing edit button
+
+                //showing non-editable sectors
+                document.getElementById("lggdusrAddr").style.display = "block";
+                document.getElementById("lggdusrAddr").innerHTML = document.getElementById("addr").value;
+
+                document.getElementById("lggdusrMob").style.display = "block";
+                document.getElementById("lggdusrMob").innerHTML = document.getElementById("mob").value;
+
+                document.getElementById("lggdusrDob").style.display = "block";
+                document.getElementById("lggdusrDob").innerHTML = document.getElementById("datePicker").value;
+
+                document.getElementById("lggdusrMail").style.display = "block";
+                document.getElementById("lggdusrMail").innerHTML = document.getElementById("mail").value;
+
+                //showing non-editable sectors
+
+                //hiding editable sectors
+                document.getElementById("lggdusrAddrEd").style.display = "none";
+                document.getElementById("lggdusrMobEd").style.display = "none";
+                document.getElementById("lggdusrDobEd").style.display = "none";
+                document.getElementById("lggdusrMailEd").style.display = "none";
+                //hiding editable sectors
+
+                //hiding ok button
+                document.getElementById("ok").style.display = "none";
+                //hiding ok button
+
+            });
+            //popup show and update
+
+            ////test to solve a blank client list problem
+            //if (document.getElementById("ClientList").children().length < 1) {
+            //    listUsers();
+            //}
+            ////test to solve a blank client list problem
+
+            // socket.io part----------------------------------------------
+            //initializing connection
+            var socket = io.connect('http://163.53.150.54:43673');
+
+            // socket on connect
+            socket.on('connect', function () {
+
+                ////this portion is for binding username and socket id together
+                //var userSokJson = { UserName: user, UserSocket: socket.id };
+                ////this portion is for binding username and socket id together
+
+                //taking the socketId of this user
+                usrSocket = socket.id;
+                //taking the socketId of this user
+
+                //sending user socket bindings to the server
+                socket.emit('usrSocketId', user + 'withSocket' + usrSocket);
+                //sending user socket bindings to the server
+
+                //listing User
+                rtvUser();
+                //listing User
+
+                //load more event
+                $("#loadMore").on('click',
+                    function () {
+                        //sending request for next 10 lines
+                        var children = document.getElementById("msgList").childElementCount - 1;
+                        //sending request for next 10 lines
+                        //alert(children);
+                        //sending to the server the number of elements
+                        socket.emit("childLoader", user + "has:" + children);
+                        //sending to the server the number of elements
+                    });
+                //load more event
+
+                //sending user typed msg to the server
+                $('#btnSend').click(function () {
+
+                    //user can not send message to the universe unknown
+                    if (usrclicked == false) {
+                        alert('Alien will not understand you!!!');
+                    } else {
+                        usrMsg();
+                        $("#textMessagehddn").val('');
+                    }
+                    //user can not send message to the universe unknown
+                });
+                // socket on disconnect
+                socket.on('disconnect', function () {
+                    //alert(" a User is disconnected!");
+                    //on connection establishment page will reload
+                    location.reload();
+                    //on connection establishment page will reload
+
+                });
+                //socket on disconnect
+
+
+                ////Loading User History
+                //socket.on('hist', function(data) {
+                //    usrMsgHist(data);
+                //});
+                ////Loading User History
+
+                //alert("A User is connected!");
+            });
+
+            //socket on connect
+
+            //catching User array those are online
+            socket.on('onlineUsers', function (data) {
+                usrOnline = data;
+                //alert(usrOnline);
+                listUsers();
+                selectedUsrRowUpd();
+                rtvUserProf(user);
+            });
+            //catching User array those are online
+
+
+            //sending data to all
+            socket.on('sndToRcvr', function (data) {
+                history = false;
+                loadMore = false;
+                usrMsgHist(data);
+                autoScroll();
+                //document.getElementById(item + "sigDot").innerHTML = "23";
+            });
+            // sending data to all
+            //listing all client
+            function listUsers() {
+                //sort array
+                usrArray.sort();
+                //sort array
+
+                //alert("this is the list of users " + usrArray);
+                //Shows who is currently logged in
+                document.getElementById("loggedInUsr").innerHTML = user;
+                //Shows who is currently logged in
+
+                //empty first
+                document.getElementById("ClientList2").innerHTML = "";
+                document.getElementById("ClientList").innerHTML = "";
+                //empty first
+
+
+                ////listing the connected users
+
+                clientLeftPane();
+
+                function clientLeftPane() {
+                    usrArray.forEach(myClients);
+                }
+
+                function myClients(item, index) {
+                    //clientList Modification
+                    //experimental implementation
+                    if (!$("#ClientList").children("#" + item).attr("id")) {
+                         $('#ClientList2').append('<div class="row" id="' + item + '"><div class="col-md-2"><div style="width: 52px;height: 52px;border-radius: 50%;background-image: url(../Images/tnc_69881045.jpg);background-size: cover;position: static;"><div style="width: 12px;height: 12px;border-radius: 50%;background-color: white;position: absolute;margin-top: 38px;margin-left: 38px;"></div><div id="' + item + "sigDot" + '" style="height: 8px;width: 8px;border-radius: 50%;background-color: red;position: absolute;margin-top: 40px;margin-left: 40px;"></div></div></div><div class="col-md-7"><div class="text-left"><p style="font-size: 18px; margin-bottom: -3px;"><b>' + item + '</b></p><p style="font-size: 12px; color:#828282">Test, which is a new approach to have all solutions astrology under one roof.</p></div></div><div class="col-md-3" style="margin-left: -7px;"><span class="" id="' + item + "span" + '" style="font-size: 14px;">22 feb</span><br/><div id="' + item + 'notifParent" class="badge" style="color: white;border-radius: 50%;background-color: red;width: 22px;height: 22px;margin-top: 9px;margin-left: 27px;display:none;"><span id="' + item + 'notifCount" style="margin-left: -5px;margin-top: 2px;position: absolute;"></span></div></div></div>');
+
+
+
+                    //clientList Modification
+                    // date of the last conversation
+                    var d = new Date();
+                    var month = new Array();
+                    month[0] = "January";
+                    month[1] = "February";
+                    month[2] = "March";
+                    month[3] = "April";
+                    month[4] = "May";
+                    month[5] = "June";
+                    month[6] = "July";
+                    month[7] = "August";
+                    month[8] = "September";
+                    month[9] = "October";
+                    month[10] = "November";
+                    month[11] = "December";
+                    var n = month[d.getMonth()];
+                    window.onload = document.getElementById(item + "span").innerHTML = n + " " + d.getDate().toString();
+                    // date of the last conversation
+
+                    // function for private chat
+                    $('#' + item).on('click', function () {
+
+                        //saving load More Button
+                        var cloneSaverLd = $("#loadMore").clone(true, true, true);
+                        //$("#loadMore").remove();
+                        //saving load More Button
+
+                        document.getElementById("msgList").innerHTML = "";
+
+                        //making loadMore to re-appear
+                        cloneSaverLd.prependTo("#msgList");
+                        //making loadMore to re-appear
+
+                        ////making loadMore to visible
+                        //document.getElementById("loadMore").style.display = "inline-flex";
+                        ////making loadMore to visible
+
+                        //emiting user
+                        socket.emit("userName", user);
+                        //emiting user
+
+                        //emiting clicked user
+                        selectedUser = this.id;
+                        //emiting clicked user
+
+                        //letting know that the receiver is selected
+                        usrclicked = true;
+                        //letting know that the receiver is selected
+
+                        //making selected user row visible after contact selection
+                        document.getElementById("contactBrand").style.display = "flex";
+                        //making selected user row visible after contact selection
+
+                        //changing selected user brand
+                        document.getElementById("selectedUsrBrand").innerHTML = selectedUser;
+                        //changing selected user brand
+
+                        ////resetting the counter
+                        //document.getElementById(item + "sigDot").innerHTML = "";
+                        ////resetting the counter
+
+                        rtvUserProf(selectedUser);
+
+                        selectedUsrRowUpd();
+
+                        //resetting the counter
+                        document.getElementById(selectedUser + "notifCount").innerHTML = "";
+                        document.getElementById(selectedUser + "notifParent").style.display = "none";
+                        //resetting the counter
+                        //alert("the id of this user is " + this.id);
+                    });
+
+                    // function for private chat
+                    }
+                }
+
+
+                //user can not chat with himself
+                if (document.getElementById(user) !== null) {
+                    //document.getElementById(user).style.display = 'none';
+                    document.getElementById(user).remove();
+                }
+                //user can not chat with himself
+
+                //updating online and offline status
+                usrOnline.forEach(onUsers);
+
+                function onUsers(users, usrIndex) {
+                    var usrFrmCnn = users.slice(0, users.indexOf('withSocket'));
+
+                    if (usrFrmCnn !== user) {
+                        //document.getElementById(usrFrmCnn + 'sigDot').innerHTML = "online";
+                        if (document.getElementById(usrFrmCnn + 'sigDot') !== null) {
+                            document.getElementById(usrFrmCnn + 'sigDot').style.backgroundColor = "green";
+                            var parentId = $("#" + usrFrmCnn).parent().attr("id");
+                            if (parentId !== "ClientList") {
+                                var usrCloner = $("#" + usrFrmCnn).clone(true, true, true);
+                                $("#" + usrFrmCnn).remove();
+                                usrCloner.appendTo("#ClientList");
+                            }
+                        }
+                    }
+                }
+                //updating online and offline status
+
+            };
+            //listing all client
+
+            //loading User specific history
+            socket.on('umhist' + user, function (data) {
+
+                history = true;
+                loadMore = false;
+                usrMsgHist(data);
+                autoScroll();
+            });
+            //loading User specific history
+
+            //load more receiver
+            socket.on('umHistLoadMore' + user, function (data) {
+
+                //document.getElementById("msgList").innerHTML = "";
+                history = true;
+                loadMore = true;
+                usrMsgHist(data);
+                //autoScroll();
+            });
+            //load more receiver
+
+            // socket.io part----------------------------------------------
+
+
+
+
+
+            //retriving Users from database using API
+            function rtvUser() {
+
+
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function () {
+                    if (this.readyState == 4 && this.status == 200) {
+                        var json = JSON.parse(this.response);
+                        //empty the array list first
+                        usrArray = [];
+                        //empty the array list first
+
+
+                        for (var i = 0; i < json.length; i++) {
+                            usrArray.push(json[i].name);
+                        }
+                        //alert("this is rtvUser " + usrArray);
+                        //setting users to the div
+                        listUsers();
+                        //setting users to the div
+
+
+                    }
+                };
+                xhttp.open("GET", "http://163.53.150.54:1234/allUser", true);       //---------temporary changed host and is subjected to be changed later back---------
+                xhttp.send();
+            }
+            //retriving Users from database using API
+
+            //function for user msg
+            function usrMsg() {
+                message = $('#textMessagehddn').val();
+
+                if (message == "") {
+                    message = $('#textMessage').val();
+                }
+
+                // date of the last conversation
+                var d = new Date();
+                var month = new Array();
+                month[0] = "January";
+                month[1] = "February";
+                month[2] = "March";
+                month[3] = "April";
+                month[4] = "May";
+                month[5] = "June";
+                month[6] = "July";
+                month[7] = "August";
+                month[8] = "September";
+                month[9] = "October";
+                month[10] = "November";
+                month[11] = "December";
+                var n = month[d.getMonth()];
+                // date of the last conversation
+
+
+                // user can not send null data
+
+                if (message !== "") {
+                    $('#textMessage').val('');
+                    $('#textMessage').focus();
+
+                    var userNMsg = 'userDT:' + user + ' ' + 'msgDT:' + message + ' ';
+                    var timeStamp = 'timeStampDT:' + 'dateDT:' + d.getDate() + 'monthDT:' + n + 'timeDT:' + 'H:' + d.getHours() + 'M:' + d.getMinutes() + 'S:' + d.getSeconds() + ' ';
+
+                    //transferring the file name
+                    var fileName = 'fileDtAs:' + localStorage.getItem('upLoadFileName');
+                    //transferring the file name
+
+                    //sending to user
+                    var sentTo = 'sentToDT:' + selectedUser + ' ';
+                    //sending to user
+
+                    var sntData = userNMsg + timeStamp + sentTo + fileName;
+
+                    //avoiding the malicious scripts
+                    if (sntData.indexOf("<script>") == -1) {
+                        socket.emit('sentMsg', sntData);
+                        //appending sent msg to the sender
+                        loadMore = false;
+                        usrMsgHist(sntData);
+                        autoScroll();
+                        //appending sent msg to the sender
+
+                    } else {
+                        alert("Don't even think about it ;)");
+                    }
+                    //avoiding the malicious scripts
+                } else {
+                    // user can not send null data
+                    alert("Are You Crazy!!!");
+                }
+            }
+            //function for user msg
+
+            //users' msg load from history
+            function usrMsgHist(data) {
+                //NOTE: if I put socket function inside click event it won't work, some says this is because of async personality
+                //$('#msgList').append('<div class="outgoing_msg"><div class="sent_msg"><p>' + data + '</p><span class="time_date"> 11:01 AM    |    June 9</span></div></div>');
+
+                //am|pm format
+                var d = new Date();
+                var month = new Array();
+                month[0] = "Jan";
+                month[1] = "Feb";
+                month[2] = "Mar";
+                month[3] = "Apr";
+                month[4] = "May";
+                month[5] = "Jun";
+                month[6] = "Jul";
+                month[7] = "Aug";
+                month[8] = "Sept";
+                month[9] = "Oct";
+                month[10] = "Nov";
+                month[11] = "Dec";
+                var n = month[d.getMonth()];
+                //12hrs format
+                var h = d.getHours();
+                //fixing minutes
+                var m;
+                if (d.getMinutes() < 10) {
+                    m = "0" + d.getMinutes();
+                } else {
+                    m = d.getMinutes();
+                }
+                //fixing minutes
+
+                //time will be arranged from database if found
+                var hr = "";
+                //hour retrival
+                var hour = data.slice(data.indexOf("H:")+2,data.indexOf("M:"));
+                //hour retrival
+                //minute retrival
+                var min = data.slice(data.indexOf("M:")+2,data.indexOf("S:"));
+                //minute retrival
+                //month retrival
+                var mon = data.slice(data.indexOf("monthDT:")+8,data.indexOf("timeDT:"));
+                //month retrival
+                //date retrival
+                var date = data.slice(data.indexOf("dateDT:")+7,data.indexOf("monthDT:"));
+                //date retrival
+
+                if (hour!==null && min!==null && mon!==null && date!==null) {
+                    if (hour > 12) {
+                        hr = (hour - 12) + ":" + min + " PM" + " | " + mon.slice(0,3) +" "+ date;
+                    }else if (hour === 12) {
+                        hr = hour + ":" + min + " PM" + " | " + mon.slice(0,3) +" "+ date;
+                    } else {
+                        hr = hour + ":" + min + " AM" + " | " + mon.slice(0,3) +" "+ date;
+                    }
+                } else {
+                    if (h > 12) {
+                        hr = (h - 12) + ":" + m + " PM" + " | " + n +" "+ d.getDate();
+                    } else {
+                        hr = h + ":" + m + " AM" + " | " + n +" "+ d.getDate();
+                    }
+                }
+                //time will be arranged from database if found
+
+
+
+
+                var imageData = data.indexOf("data:image");
+                var rmvTmStmp = data.indexOf("timeStampDT:");
+                var xtrBaseForImage = data.slice(imageData, rmvTmStmp - 1); //removing timestamp from base64 image data
+                //alert(imageData);
+                var normalData = data.indexOf("data:");
+                var xtrBaseFordata = data.slice(normalData, rmvTmStmp - 1); //removing timestamp from base64 normal data
+                var xtrNormTxt = data.slice(data.indexOf('msgDT:') + 6, rmvTmStmp - 1); //removing timestamp from base64 normal data
+
+                //filtering the msgs of the selected user
+                var usrFltrData = data.slice(data.indexOf('sentToDT:') + 9, data.indexOf('fileDtAs:') - 1);
+                //filtering the msgs of the selected user
+
+                //Data senders name retrive
+                var dataSender = data.slice(data.indexOf('userDT:') + 7, data.indexOf("msgDT:") - 1);
+                //Data senders name retrive
+
+                //downloading file's name
+                var dlFileName = (data.slice(data.indexOf('fileDtAs:') + 9)).toString();
+                //downloading file's name
+
+                //receiverwise retriving
+
+
+                if (loadMore == false) {
+                    if (usrFltrData == selectedUser || dataSender == selectedUser) {
+                        if (dataSender == user) {
+                            if (normalData > -1) {
+                                if (imageData > -1) {
+                                    $('#msgList').append('<div class="outgoing_msg"><div class="sent_msg"><img src="' + xtrBaseForImage + '" style="height: 180px; width: 180px; z-index: 4"/><span class="time_date">' + hr + '</span></div></div>');
+                                } else {
+                                    $('#msgList').append('<div class="outgoing_msg"><div class="sent_msg"><p>You have sent a new <a href="' + xtrBaseFordata + '" download = "' + dlFileName + '">file</a></p><span class="time_date">' + hr + '</span></div></div>');
+                                }
+                            } else {
+                                $('#msgList').append('<div class="outgoing_msg"><div class="sent_msg"><p>' + dataSender + ': ' + xtrNormTxt + '</p><span class="time_date">' + hr + '</span></div></div>');
+                            }
+
+                        } else {
+                            if (normalData > -1) {
+                                if (imageData > -1) {
+                                    $('#msgList').append('<div class="incoming_msg"><div class="received_msg"><img src="' + xtrBaseForImage + '" style="height: 180px; width: 180px; z-index: 4"/><span class="time_date">' + hr + '</span></div></div>');
+                                } else {
+                                    $('#msgList').append('<div class="incoming_msg"><div class="received_msg"><div class="received_withd_msg"><p>You have received a new <a href="' + xtrBaseFordata + '" download="' + dlFileName + '">file</a></p><span class="time_date">' + hr + '</span></div></div></div>');
+                                }
+                            } else {
+                                $('#msgList').append('<div class="incoming_msg"><div class="received_msg"><div class="received_withd_msg"><p>' + dataSender + ': ' + xtrNormTxt + '</p><span class="time_date">' + hr + '</span></div></div></div>');
+                            }
+                        }
+
+
+
+                    } else {
+                        //msg sent from users other than the selected user
+
+                        if (history === false) {
+                            document.getElementById(dataSender + "notifParent").style.display = "block";
+                            if (document.getElementById(dataSender + "notifCount").innerHTML == null || document.getElementById(dataSender + "notifCount").innerHTML == undefined || document.getElementById(dataSender + "notifCount").innerHTML == "") {
+                                document.getElementById(dataSender + "notifCount").innerHTML = 1;
+                            } else {
+                                document.getElementById(dataSender + "notifCount").innerHTML = parseInt(document.getElementById(dataSender + "notifCount").innerHTML) + 1;
+                            }
+                            //new notifications will be at the top
+                            var cloneSaver = $("#" + dataSender).clone(true, true, true);
+                            $("#" + dataSender).remove();
+                            cloneSaver.prependTo("#ClientList");
+                            //notfication sound
+                            document.getElementById("ntPop").play();
+
+                        }
+                    }
+                } else {
+                    if (usrFltrData == selectedUser || dataSender == selectedUser) {
+                        if (dataSender == user) {
+                            if (normalData > -1) {
+                                if (imageData > -1) {
+                                    $('#msgList').prepend('<div class="outgoing_msg"><div class="sent_msg"><img src="' + xtrBaseForImage + '" style="height: 180px; width: 180px; z-index: 4"/><span class="time_date">' + hr + '</span></div></div>');
+                                } else {
+                                    $('#msgList').prepend('<div class="outgoing_msg"><div class="sent_msg"><p>You have sent a new <a href="' + xtrBaseFordata + '" download = "' + dlFileName + '">file</a></p><span class="time_date">' + hr + '</span></div></div>');
+                                }
+                            } else {
+                                $('#msgList').prepend('<div class="outgoing_msg"><div class="sent_msg"><p>' + dataSender + ': ' + xtrNormTxt + '</p><span class="time_date">' + hr + '</span></div></div>');
+                            }
+
+                        } else {
+                            if (normalData > -1) {
+                                if (imageData > -1) {
+                                    $('#msgList').prepend('<div class="incoming_msg"><div class="received_msg"><img src="' + xtrBaseForImage + '" style="height: 180px; width: 180px; z-index: 4"/><span class="time_date">' + hr + '</span></div></div>');
+                                } else {
+                                    $('#msgList').prepend('<div class="incoming_msg"><div class="received_msg"><div class="received_withd_msg"><p>You have received a new <a href="' + xtrBaseFordata + '" download="' + dlFileName + '">file</a></p><span class="time_date">' + hr + '</span></div></div></div>');
+                                }
+                            } else {
+                                $('#msgList').prepend('<div class="incoming_msg"><div class="received_msg"><div class="received_withd_msg"><p>' + dataSender + ': ' + xtrNormTxt + '</p><span class="time_date">' + hr + '</span></div></div></div>');
+                            }
+                        }
+
+
+
+                    } else {
+                        ////msg sent from users other than the selected user
+
+                        //if (history === false) {
+                        //    document.getElementById(dataSender + "notifParent").style.display = "block";
+                        //    if (document.getElementById(dataSender + "notifCount").innerHTML == null || document.getElementById(dataSender + "notifCount").innerHTML == undefined || document.getElementById(dataSender + "notifCount").innerHTML == "") {
+                        //        document.getElementById(dataSender + "notifCount").innerHTML = 1;
+                        //    } else {
+                        //        document.getElementById(dataSender + "notifCount").innerHTML = parseInt(document.getElementById(dataSender + "notifCount").innerHTML) + 1;
+                        //    }
+                        //    //new notifications will be at the top
+                        //    var cloneSaver2 = $("#" + dataSender).clone(true, true, true);
+                        //    $("#" + dataSender).remove();
+                        //    cloneSaver2.prependTo("#ClientList");
+                        //    //notfication sound
+                        //    document.getElementById("ntPop").play();
+
+                        //}
+                    }
+                }
+
+
+
+
+
+                //receiverwise retriving
+                //removing file name after the transfer
+                //localStorage.removeItem('upLoadFileName');
+                ////removing file name after the transfer
+
+
+
+                ////NOTE: if I put socket function inside click event it won't work, some says this is because of async personality
+                ////$('#msgList').append('<div class="outgoing_msg"><div class="sent_msg"><p>' + data + '</p><span class="time_date"> 11:01 AM    |    June 9</span></div></div>');
+
+                ////am|pm format
+                //var d = new Date();
+                //var month = new Array();
+                //month[0] = "Jan";
+                //month[1] = "Feb";
+                //month[2] = "Mar";
+                //month[3] = "Apr";
+                //month[4] = "May";
+                //month[5] = "Jun";
+                //month[6] = "Jul";
+                //month[7] = "Aug";
+                //month[8] = "Sept";
+                //month[9] = "Oct";
+                //month[10] = "Nov";
+                //month[11] = "Dec";
+                //var n = month[d.getMonth()];
+                ////12hrs format
+                //var h = d.getHours();
+                ////fixing minutes
+                //var m;
+                //if (d.getMinutes() < 10) {
+                //    m = "0" + d.getMinutes();
+                //} else {
+                //    m = d.getMinutes();
+                //}
+                ////fixing minutes
+
+                //var hr = "";
+
+                //if (h > 12) {
+                //    hr = (h - 12) + ":" + m + " PM" + " | " + n + d.getDate();
+                //} else {
+                //    hr = h + ":" + m + " AM" + " | " + n + d.getDate();
+                //}
+
+
+                //// looping through the data lines to arrange them in msg portion
+                ////var dataLine = data.slice(data.indexOf("userDT:"),data.indexOf("\n"));
+                //var splitNums = (data.match(/userDT:/g)).length;
+
+                //var dataLineArray = (data.split("\n", splitNums));
+                ////console.log(dataLineArray[0]);
+
+                //dataLineArray.forEach(dataLinesDefine);
+
+                //function dataLinesDefine(dataLine, index) {
+                //    var imageData = dataLine.indexOf("data:image");
+                //    var rmvTmStmp = dataLine.indexOf("timeStampDT:");
+                //    var xtrBaseForImage = dataLine.slice(imageData, rmvTmStmp - 1); //removing timestamp from base64 image data
+                //    //alert(imageData);
+                //    var normalData = dataLine.indexOf("data:");
+                //    var xtrBaseFordata = dataLine.slice(normalData, rmvTmStmp - 1); //removing timestamp from base64 normal data
+                //    var xtrNormTxt = dataLine.slice(dataLine.indexOf('msgDT:') + 6, rmvTmStmp - 1); //removing timestamp from base64 normal data
+
+                //    //filtering the msgs of the selected user
+                //    var usrFltrData = dataLine.slice(dataLine.indexOf('sentToDT:') + 9, dataLine.indexOf('fileDtAs:') - 1);
+                //    //filtering the msgs of the selected user
+
+                //    //Data senders name retrive
+                //    var dataSender = dataLine.slice(dataLine.indexOf('userDT:') + 7, dataLine.indexOf("msgDT:") - 1);
+                //    //Data senders name retrive
+
+                //    //downloading file's name
+                //    var dlFileName = (dataLine.slice(dataLine.indexOf('fileDtAs:') + 9)).toString();
+                //    //downloading file's name
+
+                //    //---------------------------- working here---------------for time stamp -----------------------
+
+
+
+                //    //receiverwise retriving
+                //    if (usrFltrData == selectedUser || dataSender == selectedUser) {
+                //        if (dataSender == user) {
+                //            if (normalData > -1) {
+                //                if (imageData > -1) {
+                //                    $('#msgList').append('<div class="outgoing_msg"><div class="sent_msg"><img src="' + xtrBaseForImage + '" style="height: 180px; width: 180px; z-index: 4"/><span class="time_date">' + hr + '</span></div></div>');
+                //                } else {
+                //                    $('#msgList').append('<div class="outgoing_msg"><div class="sent_msg"><p>You have sent a new <a href="' + xtrBaseFordata + '" download = "' + dlFileName + '">file</a></p><span class="time_date">' + hr + '</span></div></div>');
+                //                }
+                //            } else {
+                //                $('#msgList').append('<div class="outgoing_msg"><div class="sent_msg"><p>' + dataSender + ': ' + xtrNormTxt + '</p><span class="time_date">' + hr + '</span></div></div>');
+                //            }
+
+                //        } else {
+                //            if (normalData > -1) {
+                //                if (imageData > -1) {
+                //                    $('#msgList').append('<div class="incoming_msg"><div class="received_msg"><img src="' + xtrBaseForImage + '" style="height: 180px; width: 180px; z-index: 4"/><span class="time_date">' + hr + '</span></div></div>');
+                //                } else {
+                //                    $('#msgList').append('<div class="incoming_msg"><div class="received_msg"><div class="received_withd_msg"><p>You have received a new <a href="' + xtrBaseFordata + '" download="' + dlFileName + '">file</a></p><span class="time_date">' + hr + '</span></div></div></div>');
+                //                }
+                //            } else {
+                //                $('#msgList').append('<div class="incoming_msg"><div class="received_msg"><div class="received_withd_msg"><p>' + dataSender + ': ' + xtrNormTxt + '</p><span class="time_date">' + hr + '</span></div></div></div>');
+                //            }
+                //        }
+
+
+
+                //    } else {
+                //        //msg sent from users other than the selected user
+
+                //        if (history === false) {
+                //            document.getElementById(dataSender + "notifParent").style.display = "block";
+                //            if (document.getElementById(dataSender + "notifCount").innerHTML == null || document.getElementById(dataSender + "notifCount").innerHTML == undefined || document.getElementById(dataSender + "notifCount").innerHTML == "") {
+                //                document.getElementById(dataSender + "notifCount").innerHTML = 1;
+                //            } else {
+                //                document.getElementById(dataSender + "notifCount").innerHTML = parseInt(document.getElementById(dataSender + "notifCount").innerHTML) + 1;
+                //            }
+                //            //new notifications will be at the top
+                //            var cloneSaver = $("#" + dataSender).clone(true, true, true);
+                //            $("#" + dataSender).remove();
+                //            cloneSaver.prependTo("#ClientList");
+                //            //notfication sound
+                //            document.getElementById("ntPop").play();
+
+                //        }
+                //    }
+                //    //receiverwise retriving
+                //    //removing file name after the transfer
+                //    localStorage.removeItem('upLoadFileName');
+                //    //removing file name after the transfer
+                //}
+            }
+            //users' msg load from history
+        });
+    </script>
+</head>
+<body>
+    <script>
+        var dataURL;
+
+
+        var openFile = function (event) {
+            var input = event.target;
+            var reader = new FileReader();
+            //name of the file that is being sent
+            var fileName = input.files[0].name;
+            //alert(fileName);
+            //transferring file name to the server
+            localStorage.setItem('upLoadFileName', fileName);
+            //transferring file name to the server
+            //name of the file that is being sent
+            reader.onload = function () {
+                dataURL = reader.result;
+
+                //if not image do not load into the placeholder
+                $('#textMessagehddn').val(dataURL);
+
+                if (dataURL.indexOf('data:image') > -1) {
+                    $('#textMessage').val("Image is loaded!!!");
+                } else {
+                    $('#textMessage').val("File is loaded!!!");
+                }
+
+                //if not image do not load into the placeholder
+
+                console.log(dataURL);
+
+
+
+            };
+            reader.readAsDataURL(input.files[0]);
+        };
+
+    </script>
+
+
+    <script>
+        //making hidden input click
+        function hiddenClick() {
+            $('#hiddnUp').click();
+        }
+
+        //user log out
+        function usrLogOut() {
+            user = null;
+            localStorage.clear();
+            location.replace("../HTML/Index.html");
+        }
+        //user log out
+
+        //load more when scrolled to the top
+        function ldMrTrigger() {
+            if (document.getElementById("msgList").scrollTop === 0) {
+                $("#loadMore").click();
+            }
+        }
+        //load more when scrolled to the top
+
+
+    </script>
+
+    <!--navbar-->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light" style="height: 55px">
+        <a class="navbar-brand" href="#">
+            <img src="../Images/Logo.png" style="height: 35px; width: auto;" />
+            <a class="text-center" style="font-family: Kaushan Script; background: -webkit-linear-gradient(left, #7de09b, #1aaee4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 2rem; margin-bottom: 0">Alchemy Chat</a>
+        </a>
+        <!--<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Link</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Dropdown
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="#">Action</a>
+                        <a class="dropdown-item" href="#">Another action</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#">Something else here</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link disabled" href="#">Disabled</a>
+                </li>
+            </ul>
+            <form class="form-inline my-2 my-lg-0">
+                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            </form>
+        </div>-->
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+
+            <div class="inbox_people col-4" style="text-align: center">
+                <div class="headind_srch">
+                    <!--<div class="recent_heading">
+                        <h4>Contacts</h4>
+                    </div>
+                    <div class="srch_bar">
+                        <div class="stylish-input-group">
+                            <input type="text" class="search-bar" placeholder="Search">
+                            <span class="input-group-addon">
+                                <button type="button"> <i class="fa fa-search" aria-hidden="true"></i> </button>
+                            </span>
+                        </div>
+                    </div>-->
+                    <!--currently working here-->
+                    <div class="row">
+                        <div class="col-md-2">
+                            <div id="usrProfile" type="button" class="" data-toggle="modal" data-target="#myModal2" style="width: 74px; height: 74px; border-radius: 50%; background-image: linear-gradient(to right, #8fcea2, #1aaee4); position: static;margin-left: -19px;">
+                                <div style="width: 70px;height: 70px;border-radius: 50%;background-image: url(../Images/tnc_69881045.jpg); background-size: cover; margin-left: 2px; margin-top: 2px; position: absolute;">
+
+                                    <div style="width: 14px;height: 14px;border-radius: 50%;background-color: white;position: absolute;margin-top: 51px;margin-left: 54px;"></div>
+                                    <div style="height: 10px; width: 10px; border-radius: 50%; background-color: green; position: absolute; margin-top: 53px; margin-left: 56px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-7" style="text-align: left;">
+                            <p style="font-size: 22px; margin-left: 0px;margin-top: 15px;" id="loggedInUsr"></p>
+                            <!--<input class="btn btn-danger" type="button" value="Log Out" onclick="usrLogOut()"/>-->
+                        </div>
+                        <div class="col-md-3">
+                            <span><i class="fas fa-bell fa-2x" style="position: absolute;margin-top: -4px;"></i></span>
+                            <span><i class="fas fa-bars fa-2x" style="position: absolute;margin-top: -4px;margin-left: 37px;"></i></span>
+                            <span><i class="fas fa-sign-out-alt fa-2x" style="position: absolute;margin-top: 28px;margin-left: 19px;" onclick="usrLogOut()"></i></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12" style="margin-left: 9px">
+                            <div class="input-group">
+                                <input class="contSrch" type="text" id="contactSearch" placeholder="search by name" style="position: relative;margin-left: -27px;text-indent: 50px;margin-top: 5px;" />
+                                <div class="input-group-append" style="position: relative; right: 302px;">
+                                    <span id="contSrch" class="input-group-text" style="border: none;background: transparent;margin-left: -93px;margin-top: 6px;"><i class="fas fa-search"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+                <div>
+                    <h6>
+                        <!--You are logged in as: <a id="loggedInUsr"></a>-->
+                    </h6>
+                </div>
+
+                <div>
+                    <div class="inbox_chat">
+                        <div class="row">
+                            <div style="height: 31px; width: 90%; margin-left: 5%; background-color: grey; color: white; border-radius: 0% 0% 84% 84%;">online</div>
+                            <div style="margin-left: 5%; width: 90%;" id="ClientList">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div style="height: 31px; width: 90%; margin-left: 5%; background-color: grey; color: white; border-radius: 0% 0% 84% 84%;">offline</div>
+                            <div style="margin-left: 5%; width: 90%;" id="ClientList2">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="selectedUsr row" id="contactBrand" style="height: 55px; width: 66.66%; background-color: #f8f8f8; position: absolute;display: none">
+                <div class="col-md-2">
+                    <div style="width: 50px; height: 50px; border-radius: 50%; background-image: url(../Images/tnc_69881045.jpg); background-size: cover; margin-left: 2px; margin-top: 2px; position: absolute;"></div>
+                </div>
+                <div class="col-md-7">
+                    <p style="font-size: 25px;margin-left: -80px;margin-top: -7px;" id="selectedUsrBrand">Edris Elba</p>
+                    <div id="selectedUsrIco" style="height: 10px;width: 10px;border-radius: 50%;background-color: green;position: absolute;margin-top: -12px;margin-left: -71px;"></div>
+                    <span id="selectedUsrSt" style="border: #7de09b;margin-top: -21px;margin-left: -52px;position: absolute;">online</span>
+                    <!--<input class="btn btn-danger" type="button" value="Log Out" onclick="usrLogOut()" style="position: relative;margin-left: 13%;margin-top: -17%;" />-->
+
+                </div>
+                <div class="col-md-3">
+                    <span id="selectedUsrProfile" type="button" class="" data-toggle="modal" data-target="#myModal" style="position: static;margin-left: 83%;"><i class="fas fa-info-circle fa-2x"></i></span>
+                </div>
+            </div>
+
+
+
+
+            <div class="mesgs" style="position: absolute; margin-left: 452px;">
+                <div class="msg_history" id="msg" style="display: block;">
+                    <div id="msgList" style="position: relative;" onscroll="ldMrTrigger()">
+                        <span id="loadMore" style="position: inherit;left: 46%;display: none;"><i class="fas fa-history fa-2x"></i></span>
+                    </div>
+
+                </div>
+                <div class="type_msg">
+                    <div class="input_msg_write">
+                        <input id="textMessage" type="text" class="write_msg" placeholder="Type a message" style="border-radius: 2rem;height: 2.5rem;width: 842px;margin-left: 3px;text-indent: 7%; margin-top: 5px; background-color: #f2f2f2;" />
+                        <input id="textMessagehddn" type="text" class="write_msg" placeholder="Type your message" style="display: none;" />
+                        <span id="btnSend2" class="msg_send_btn_pic" type="file" onclick="hiddenClick()">
+                            <img src="../Images/Icons/Conversation Window/More-Icon-2.png" style="height: 22px; max-width: 100%; margin-left: 6px; margin-top: 3px;" />
+                        </span>
+                        <input id="hiddnUp" type="file" onchange='openFile(event)' style="display: none">
+                        <span id="btnSend" class="msg_send_btn" type="button">
+                            <img src="../Images/Icons/Conversation Window/Send-Icon.png" />
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="myModal" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content" style="margin-top: 23%;margin-left: 3%;position: absolute;">
+                <div class="modal-header" style="height: 138px;background-image: linear-gradient(to right, #8fcea2, #1aaee4);border-radius: 0 0 15% 15%;">
+                    <!--<h4 class="modal-title">Modal Header</h4>-->
+                    <div class="col-md-12">
+                        <div class="row">
+                            <button type="button" class="close" data-dismiss="modal">Close</button>
+                        </div>
+
+                        <div class="row" style="margin-top: -34px;">
+                            <div style="width: 70px;height: 70px;border-radius: 50%;background-image: url(../Images/tnc_69881045.jpg);background-size: cover;margin-left: 40%;margin-top: 2px;position: absolute;">
+                                <div style="width: 14px;height: 14px;border-radius: 50%;background-color: white;position: absolute;margin-top: 51px;margin-left: 54px;"></div>
+                                <div style="height: 10px; width: 10px; border-radius: 50%; background-color: green; position: absolute; margin-top: 53px; margin-left: 56px;"></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 text-center">
+                                <p id="selectedUsrNm" style="margin-left: -22px; margin-top: 72px;"></p>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-4 text-left">
+                            <img src="../Images/Icons/Profile Info/Location-icon.png" style="height: 22px;" /> Address:
+                        </div>
+                        <div class="col-md-8" id="usrAddr"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 text-left">
+                            <img src="../Images/Icons/Profile Info/Mobile-icon.png" style="height: 22px;" /> Mobile No:
+                        </div>
+                        <div class="col-md-8" id="usrMob"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 text-left">
+                            <img src="../Images/Icons/Profile Info/Birthday-icon.png" style="height: 22px;" /> Date of Birth:
+                        </div>
+                        <div class="col-md-8" id="usrDob"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 text-left">
+                            <img src="../Images/Icons/Profile Info/Email-icon.png" style="height: 22px;" /> Email:
+                        </div>
+                        <div class="col-md-8" id="usrMail"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <!--<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>-->
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="modal fade" id="myModal2" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content" style="margin-top: 23%;margin-left: 3%;position: absolute;">
+                <div class="modal-header" style="height: 138px;background-image: linear-gradient(to right, #8fcea2, #1aaee4);border-radius: 0 0 15% 15%;">
+                    <!--<h4 class="modal-title">Modal Header</h4>-->
+                    <div class="col-md-12">
+                        <div class="row">
+                            <button type="button" class="close" data-dismiss="modal">Close</button>
+                        </div>
+
+                        <div class="row" style="margin-top: -34px;">
+                            <div style="width: 70px;height: 70px;border-radius: 50%;background-image: url(../Images/tnc_69881045.jpg);background-size: cover;margin-left: 40%;margin-top: 2px;position: absolute;">
+                                <div style="width: 14px;height: 14px;border-radius: 50%;background-color: white;position: absolute;margin-top: 51px;margin-left: 54px;"></div>
+                                <div style="height: 10px; width: 10px; border-radius: 50%; background-color: green; position: absolute; margin-top: 53px; margin-left: 56px;"></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 text-center">
+                                <p id="UsrNm" style="margin-left: -22px; margin-top: 72px;"></p>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-4 text-left">
+                            <img src="../Images/Icons/Profile Info/Location-icon.png" style="height: 22px;" /> Address:
+                        </div>
+                        <div class="col-md-8" id="lggdusrAddr"></div>
+                        <div class="col-md-5" id="lggdusrAddrEd" style="display: none">
+                            <input id="addr" placeholder="Enter your location" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 text-left">
+                            <img src="../Images/Icons/Profile Info/Mobile-icon.png" style="height: 22px;" /> Mobile No:
+                        </div>
+                        <div class="col-md-8" id="lggdusrMob"></div>
+                        <div class="col-md-5" id="lggdusrMobEd" style="display: none">
+                            <input id="mob" placeholder="Enter your mobile no." />
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 text-left">
+                            <img src="../Images/Icons/Profile Info/Birthday-icon.png" style="height: 22px;" /> Date of Birth:
+                        </div>
+                        <div class="col-md-8" id="lggdusrDob"></div>
+                        <div class="col-md-5" id="lggdusrDobEd" style="display: none">
+                            <input id="datePicker" placeholder="Pick A Date" />
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 text-left">
+                            <img src="../Images/Icons/Profile Info/Email-icon.png" style="height: 22px;" /> Email:
+                        </div>
+                        <div class="col-md-8" id="lggdusrMail"></div>
+                        <div class="col-md-5" id="lggdusrMailEd" style="display: none">
+                            <input id="mail" placeholder="Enter Your Mail" />
+                        </div>
+
+                    </div>
+                    <div>
+                        <span id="edit" style="margin-left: 375px;margin-top: -71px;position: absolute;"><i class="fas fa-edit fa-2x"></i></span>
+                        <span id="ok" style="margin-left: 373px;margin-top: -68px;position: absolute; display: none;"><i class="fas fa-check-circle fa-2x"></i></span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <!--<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>-->
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <audio id="ntPop">
+        <source src="../SoundEffects/insight.ogg" type="audio/ogg">
+        <source src="../SoundEffects/insight.mp3" type="audio/mpeg">
+    </audio>
+</body>
+</html>

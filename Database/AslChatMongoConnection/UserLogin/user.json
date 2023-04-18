@@ -1,0 +1,30 @@
+{ 
+    "_id" : ObjectId("5e7600147918a0a9259053f0"), 
+    "name" : "Jumon", 
+    "email" : "jumon@gmail.com", 
+    "password" : "123"
+}
+{ 
+    "_id" : ObjectId("5e7600147918a0a9259053f1"), 
+    "name" : "Sakib", 
+    "email" : "sakib@gmail.com", 
+    "password" : "123"
+}
+{ 
+    "_id" : ObjectId("5e7600147918a0a9259053f2"), 
+    "name" : "Apu", 
+    "email" : "apu@gmail.com", 
+    "password" : "123"
+}
+{ 
+    "_id" : ObjectId("5e7600147918a0a9259053f3"), 
+    "name" : "Main", 
+    "email" : "main@gmail.com", 
+    "password" : "123"
+}
+{ 
+    "_id" : ObjectId("5e7600147918a0a9259053f4"), 
+    "name" : "Maruf", 
+    "email" : "maruf@gmail.com", 
+    "password" : "123"
+}

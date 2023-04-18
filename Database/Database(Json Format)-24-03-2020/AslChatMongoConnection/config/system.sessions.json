@@ -1,0 +1,49 @@
+{ 
+    "_id" : {
+        "id" : UUID("ffde6c69-bd6f-4916-a2c8-96847eb1e902"), 
+        "uid" : BinData(0, "47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=")
+    }, 
+    "lastUse" : ISODate("2020-03-24T05:41:58.150+0000")
+}
+{ 
+    "_id" : {
+        "id" : UUID("b93e64e3-66c0-425e-8a67-c5e7dbdc9dc6"), 
+        "uid" : BinData(0, "47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=")
+    }, 
+    "lastUse" : ISODate("2020-03-24T05:26:58.149+0000")
+}
+{ 
+    "_id" : {
+        "id" : UUID("fee16444-b93a-49b2-af55-a03e27911140"), 
+        "uid" : BinData(0, "47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=")
+    }, 
+    "lastUse" : ISODate("2020-03-24T05:26:58.150+0000")
+}
+{ 
+    "_id" : {
+        "id" : UUID("275d9be8-264b-408a-b689-452dcce6f6bb"), 
+        "uid" : BinData(0, "47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=")
+    }, 
+    "lastUse" : ISODate("2020-03-24T05:41:58.149+0000")
+}
+{ 
+    "_id" : {
+        "id" : UUID("762aedf9-c552-4c30-a02f-74af45b486e9"), 
+        "uid" : BinData(0, "47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=")
+    }, 
+    "lastUse" : ISODate("2020-03-24T05:41:58.149+0000")
+}
+{ 
+    "_id" : {
+        "id" : UUID("0247770a-ac61-4c1c-a58c-9ea06cb5e972"), 
+        "uid" : BinData(0, "47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=")
+    }, 
+    "lastUse" : ISODate("2020-03-24T05:36:58.148+0000")
+}
+{ 
+    "_id" : {
+        "id" : UUID("7726452b-4ea4-4cfd-8feb-c27111fb0c97"), 
+        "uid" : BinData(0, "47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=")
+    }, 
+    "lastUse" : ISODate("2020-03-24T05:41:58.150+0000")
+}
